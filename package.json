@@ -1,0 +1,22 @@
+{
+  "name": "n27",
+  "version": "1.0.0",
+  "description": "Meine tolle Smartphone-BANK",
+  "main": "server.js",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://s150915@bitbucket.org/s150915/n27.git"
+  },
+  "author": "Mirjam",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/s150915/n27#readme"
+}
