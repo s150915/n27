@@ -29,10 +29,12 @@ Bereitet die Daten zur Übergabe an die server.js vor.
 Dann npm installieren (npm install --save)*/
 
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 
 // Bindet den BodyParser ein. Der Wert soll wahr sein.
 
 app.use(bodyParser.urlencoded({extended: true}))
+app.use(cookieParser())
 
 // Startet den Server. 
 // Der Server lauscht auf Befehle vom Client (deswegen listen)
@@ -50,9 +52,11 @@ app.get('/',(req, res, next) => {
 
     if(req.cookies['istAngemeldetAls']){
         console.log("Kunde ist angemeldet als" + req.cookies['istAngemeldetAls'])
-
+        res.render('index.ejs', {
+        })
+    }else{
+        res.render('login.ejs', {
+        })
     }
 
-    res.render('index.ejs', {
-    })
 }) 
