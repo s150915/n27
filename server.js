@@ -60,3 +60,9 @@ app.get('/',(req, res, next) => {
     }
 
 }) 
+
+app.get('/login',(req, res, next) => {
+    res.render('login.ejs',{
+        
+    })
+})
