@@ -47,6 +47,12 @@ const server = app.listen(process.env.PORT || 3000, () => {
 // Server kann durch GET-Request erreicht werden.
 
 app.get('/',(req, res, next) => {
+
+    if(req.cookies['istAngemeldetAls']){
+        console.log("Kunde ist angemeldet als" + req.cookies['istAngemeldetAls'])
+
+    }
+
     res.render('index.ejs', {
     })
 }) 
