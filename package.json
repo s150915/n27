@@ -1,9 +1,10 @@
 {
-  "name": "n27",
+  "name": "n27gw11a",
   "version": "1.0.0",
   "description": "Meine tolle Smartphone-BANK",
   "main": "server.js",
   "dependencies": {
+    "cookie-parser": "^1.4.4",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "nodemon": "^1.18.10"
@@ -15,9 +16,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://s150915@bitbucket.org/s150915/n27.git"
+    "url": "git+https://stbaeumer@bitbucket.org/stbaeumer/n27gw11a.git"
   },
-  "author": "Mirjam",
+  "author": "Stefan",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/s150915/n27#readme"
+  "homepage": "https://bitbucket.org/stbaeumer/n27gw11a#readme"
 }
