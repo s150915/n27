@@ -14,20 +14,28 @@
     <meta name="msapplication-TileColor" content="#ffc40d">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">        
-    <title>N27 - Startseite</title>
+    <title>N27 - Konto anlegen</title>
   </head>
   <body>
     <header>
-      <h1>Herzlich Willkommen</h1>    
+      <h1>Konto anlegen</h1>    
     </header> 
-    <form>
 
-      <button formaction="/kontoAnlegen">Konto anlegen</button>
-  
-  </form>
+    <form method="POST" action="/kontoAnlegen">
+        <!-- Element, das etwas anzeigt -->
+        <label>Kontonummer:</label>
+        <!-- Element vom Typ Text, in das getippt werden kann -->
+        <input type="number" name="kontonummer">
+        <label>Kontoart:</label>
+        <!-- Element vom Typ Password, das Eingaben maskiert -->
+        <input type="text" name="kontoart">
+        <!-- Element vom Typ Button, das eine Schaltfläche zeigt -->
+        <button>Konto anlegen</button>
+      </form>   
+      <label></label>  
 
-
-    <nav>      
+    
+     <nav>      
       <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                        
       <a href="/login">Logout</a>        
       <a href="mailto:lechte.mirjam.150915@berufskolleg-borken.de"> <i class="fa fa-envelope-o"></i></a>
