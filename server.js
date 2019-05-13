@@ -2,6 +2,7 @@ class Konto{
     constructor(){
         this.Kontonummer
         this.Kontoart
+        this.Iban 
     }
 }
 
@@ -19,6 +20,9 @@ const server = app.listen(process.env.PORT || 3000, () => {
     console.log('Server lauscht auf Port %s', server.address().port)    
 })
 
+// conosle.log bewirkt: Ausgabe von 'Server lauscht auf...' im Terminal.
+
+// Die app.get('/'...) wird abgearbeitet, wenn die Startseite im Browser aufgerufen wird.
 app.get('/',(req, res, next) => {   
 
     let idKunde = req.cookies['istAngemeldetAls']
@@ -42,7 +46,7 @@ app.get('/impressum',(req, res, next) => {
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
-        // ... dann wird impressum.ejs gerendert.
+        // ... dann wird impressum.ejs gerendert(Seite wird abgerufen). res = response
         
         res.render('impressum.ejs', {                              
         })
@@ -78,6 +82,7 @@ app.post('/',(req, res, next) => {
 })
 
 // Wenn die Seite localhost:3000/kontoAnlegen angesurft wird, ...
+// get nur die Seite aufrufen
 
 app.get('/kontoAnlegen',(req, res, next) => {   
 
@@ -99,6 +104,7 @@ app.get('/kontoAnlegen',(req, res, next) => {
 
 // Wenn der Button auf der kontoanlegen-Seite gedrückt wird, ...
 
+// post beim Button 'Konto anlegen'
 app.post('/kontoAnlegen',(req, res, next) => {   
 
     let idKunde = req.cookies['istAngemeldetAls']
@@ -106,7 +112,16 @@ app.post('/kontoAnlegen',(req, res, next) => {
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
 
+        // let = Deklaration
+        // new = Instanziierung
+        // Alternativ können Deklaration und Instanziierung in einer Zeile geschrieben werden.
+
         let konto = new Konto()
+
+        // Der Wert aus dem Input mit dem Namen 'kontonummer'
+        // wird zugewiesen (=) an die Eigenschaft Kontonummer 
+        // des Objekts namens konto.
+
         konto.Kontonummer = req.body.kontonummer
         konto.Kontoart = req.body.kontoart
         
@@ -122,6 +137,8 @@ console.log(errechneteIban)
             meldung : "Das "+ konto.Kontoart +" mit der Kontonummer "+ konto.Kontonummer +" wurde erfolgreich angelegt."
         })
     }else{
+
+        // Die login.ejs wird gerendert und als Response an den Browser übergeben.
         res.render('login.ejs', {                    
         })    
     }
