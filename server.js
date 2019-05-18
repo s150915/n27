@@ -9,7 +9,7 @@ class Konto{
 const express = require('express')
 const iban = require('iban') 
 const bodyParser = require('body-parser')
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser') 
 const app = express() 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
@@ -89,7 +89,7 @@ app.get('/kontoAnlegen',(req, res, next) => {
     let idKunde = req.cookies['istAngemeldetAls']
     
     if(idKunde){
-        console.log("Kunde ist angemeldet als " + idKunde)
+        console.log("Kunde ist angemeldet als " + idKunde) 
         
         // ... dann wird kontoAnlegen.ejs gerendert.
         
