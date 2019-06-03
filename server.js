@@ -178,3 +178,43 @@ console.log(errechneteIban)
         })    
     }
 })
+app.get('/stammdatenPflegen',(req, res, next) => {   
+
+    let idKunde = req.cookies['istAngemeldetAls']
+    
+    if(idKunde){
+        console.log("Kunde ist angemeldet als" + idKunde) 
+        
+        res.render('stammdatenPflegen.ejs', {  
+            meldung : ""                            
+        })
+    }else{
+        res.render('login.ejs', {                    
+        })    
+    }
+})
+
+app.post('/stammdatenPflegen',(req, res, next) => {   
+
+    if(idKunde == kunde.IdKunde && kennwort == kunde.Kennwort){            
+        console.log("Der Cookie wird gesetzt:")
+
+        kunde.Vorname=req.body.vorname
+        kunde.Nachname=req.body.nachname
+        kunde.Geschlecht=req.body.geschlecht
+        kunde.Adresse=req.body.adresse 
+        kunde.Kennwort=req.body.kennwort 
+        kunde.Geburtsdatum=req.body.geburtsdatum 
+        kunde.IdKunde=req.body.idkunde 
+
+        res.cookie('istAngemeldetAls', idKunde)
+        res.render('stammdatenPflegen.ejs', {  
+            meldung:"Die Stammdaten wurden erfolgreich geändert."        
+        })
+    }else{            
+        console.log("Der Cookie wird gelöscht")
+        res.cookie('istAngemeldetAls','')
+        res.render('login.ejs', {                    
+        })
+    }
+})
