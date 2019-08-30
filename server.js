@@ -34,6 +34,10 @@ kunde.Geburtsdatum = "1988-11-11"
 kunde.Adresse =  "Berlin" 
 kunde.Geschlecht = "weiblich" 
 
+// Die Zahl 27272727 wird zugewiesen an eine Variable namens
+// bankleitzahl vom Typ const.
+
+const bankleitzahl = 27272727
 const express = require('express')
 const iban = require('iban') 
 const bodyParser = require('body-parser')
