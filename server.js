@@ -41,15 +41,22 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const app = express()
 const mysql = require('mysql') 
+
 const dbVerbindung = mysql.createConnection({
-    host: '10.40.38.110',
+    host: '10.40.38.110', //Server
     user: 'placematman',
     password: 'BKB123456!',
-    db: 'dbn27',
-    port: '3306'
+    database: 'dbn27',
+    port: '3306' //Portschlüssel, Kanal 
 })
 
-dbVerbindung.connect();
+dbVerbindung.connect(function(fehler){
+    dbVerbindung.query('CREATE TABLE IF NOT EXISTS konto(iban VARCHAR(22), anfangssaldo DECIMAL(15,2), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) { 
+        if (fehler) throw fehler
+        console.log('Die Tabelle konto wurde erfolgreich angelegt. ')
+      })
+})
+
 
 
 app.set('view engine', 'ejs')
@@ -165,6 +172,7 @@ app.post('/kontoAnlegen',(req, res, next) => {
         // Der Wert aus dem Input mit dem Namen 'kontonummer'
         // wird zugewiesen (=) an die Eigenschaft Kontonummer
         // des Objekts namens konto.
+
         konto.Kontonummer = req.body.kontonummer
         konto.Kontoart = req.body.kontoart
         const bankleitzahl = 27000000
@@ -173,11 +181,10 @@ app.post('/kontoAnlegen',(req, res, next) => {
         
         //Füge das Konto in die Mysql- Datenbank ein.
 
-        dbVerbindung.query('INSERT INTO konto(iban,timestamp,anfangssaldo,kontoart) VALUES("'+ konto.Iban +'",now(),100,"'+ konto.Kontoart +'")', function (error, results, fields) {
-            if (error) throw error;
+        dbVerbindung.query('INSERT INTO konto(iban,anfangssaldo,kontoart,timestamp) VALUES("'+ konto.Iban +'",100,"' + konto.Kontoart +'", NOW())', function (fehler) {
+            if (fehler) throw fehler;
             console.log('Das Konto wurde erfolgreich angelegt '); 
           });
-           
 
         // ... wird die kontoAnlegen.ejs gerendert.
 
