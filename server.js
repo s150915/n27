@@ -16,8 +16,7 @@ class Kunde {
         this.Geburtsdatum
         this.Nachname
         this.Adresse
-        this.Geschlecht 
-        this.Mail       
+        this.Geschlecht        
     }
 }
 
@@ -33,32 +32,12 @@ kunde.Geburtsdatum = "1999-12-31"
 kunde.Nachname = "Müller"
 kunde.Vorname = "Hildegard"
 kunde.Geschlecht = "w"
-kunde.Mail = "mueller.345@web.de"
 
 const iban = require('iban')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const app = express()
-const mysql = require('mysql') 
-
-const dbVerbindung = mysql.createConnection({
-    host: '10.40.38.110', //Server
-    user: 'placematman',
-    password: 'BKB123456!',
-    database: 'dbn27',
-    port: '3306' //Portschlüssel, Kanal 
-})
-
-dbVerbindung.connect(function(fehler){
-    dbVerbindung.query('CREATE TABLE IF NOT EXISTS konto(iban VARCHAR(22), anfangssaldo DECIMAL(15,2), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) { 
-        if (fehler) throw fehler
-        console.log('Die Tabelle konto wurde erfolgreich angelegt. ')
-      })
-})
-
-
-
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({extended: true}))
@@ -172,19 +151,12 @@ app.post('/kontoAnlegen',(req, res, next) => {
         // Der Wert aus dem Input mit dem Namen 'kontonummer'
         // wird zugewiesen (=) an die Eigenschaft Kontonummer
         // des Objekts namens konto.
-
         konto.Kontonummer = req.body.kontonummer
         konto.Kontoart = req.body.kontoart
         const bankleitzahl = 27000000
         const laenderkennung = "DE"
         konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + konto.Kontonummer)
         
-        //Füge das Konto in die Mysql- Datenbank ein.
-
-        dbVerbindung.query('INSERT INTO konto(iban,anfangssaldo,kontoart,timestamp) VALUES("'+ konto.Iban +'",100,"' + konto.Kontoart +'", NOW())', function (fehler) {
-            if (fehler) throw fehler;
-            console.log('Das Konto wurde erfolgreich angelegt '); 
-          });
 
         // ... wird die kontoAnlegen.ejs gerendert.
 
@@ -225,24 +197,11 @@ app.post('/stammdatenPflegen',(req, res, next) => {
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
-
-    // Nur wenn das Input namens Nachname nicht leer ist, wird der
-    // Nachname neu gesetzt.   
-
-        if(req.body.nachname){
-            kunde.Nachname = req.body.nachname
-        }
-
-        if(req.body.kennwort){
-            kunde.Kennwort = req.body.kennwort
-        }
-
-        if(req.body.email){
-            kunde.Mail = req.body.email 
-        } 
+        kunde.Nachname = req.body.nachname
+        kunde.Kennwort = req.body.kennwort
         
         res.render('stammdatenPflegen.ejs', {                              
-            meldung : "Die Stammdaten wurden geändert. Neuer Nachname: " + kunde.Nachname + "\n Neues Kennwort: " + kunde.Kennwort +"\n Neue Mail: " + kunde.Mail 
+            meldung : "Die Stammdaten wurden geändert."
         })
     }else{
         // Die login.ejs wird gerendert 
