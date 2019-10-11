@@ -1,3 +1,6 @@
+// Klassendefinition der Klasse Konto. 
+// Die Klasse ist der Bauplan, der alle relevanten Eigenschaften enthält.
+
 class Konto{
     constructor(){
         this.Kontonummer
@@ -5,7 +8,6 @@ class Konto{
         this.Iban
     }
 }
-
 // Klassendefinition
 
 class Kunde {
@@ -17,10 +19,13 @@ class Kunde {
         this.Nachname
         this.Adresse
         this.Geschlecht        
+        this.Mail
     }
 }
 
-// Deklaration und Instanziierung
+// Deklaration (let kunde) und Instanziierung (new Kunde()) 
+// Bei der Instanziierung werden Speicherzellen reserviert.
+//  
 
 let kunde = new Kunde()
 
@@ -32,11 +37,29 @@ kunde.Geburtsdatum = "1999-12-31"
 kunde.Nachname = "Müller"
 kunde.Vorname = "Hildegard"
 kunde.Geschlecht = "w"
+kunde.Mail = "h.mueller@web.de"
 
 const iban = require('iban')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const mysql = require('mysql')
+
+const dbVerbindung = mysql.createConnection({
+    host: '10.40.38.110',
+    user: 'placematman',
+    password: 'BKB123456!',
+    database: 'dbn27',
+    port: '3306'
+})
+
+dbVerbindung.connect(function(fehler){
+    dbVerbindung.query('CREATE TABLE IF NOT EXISTS konto(iban VARCHAR(22), anfangssaldo DECIMAL(15,2), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) {
+        if (fehler) throw fehler
+        console.log('Die Tabelle konto wurde erfolgreich angelegt.');
+    })
+})
+
 const app = express()
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
@@ -53,7 +76,7 @@ const server = app.listen(process.env.PORT || 3000, () => {
 
 app.get('/',(req, res, next) => {   
 
-    let idKunde = req.cookies['istAngemeldetAls']
+    let idKunde =req.cookies['istAngemeldetAls']
     
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
@@ -157,6 +180,12 @@ app.post('/kontoAnlegen',(req, res, next) => {
         const laenderkennung = "DE"
         konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + konto.Kontonummer)
         
+        // Füge das Konto in die MySQL-Datenbank ein
+    
+        dbVerbindung.query('INSERT INTO konto(iban,anfangssaldo,kontoart,timestamp) VALUES ("' + konto.Iban + '",100,"' + konto.Kontoart + '",+ NOW());', function (fehler) {
+            if (fehler) throw fehler;
+            console.log('Das Konto wurde erfolgreich angelegt');
+        });
 
         // ... wird die kontoAnlegen.ejs gerendert.
 
@@ -197,11 +226,24 @@ app.post('/stammdatenPflegen',(req, res, next) => {
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
-        kunde.Nachname = req.body.nachname
-        kunde.Kennwort = req.body.kennwort
+        // Nur, wenn das Input namens nachname nicht leer ist, wird der
+        // Nachname neu gesetzt.
+
+        if(req.body.nachname){
+            kunde.Nachname = req.body.nachname
+        }
+        
+        if(req.body.kennwort){
+            kunde.Kennwort = req.body.kennwort
+        }
+
+        if(req.body.email){
+            kunde.Mail = req.body.email
+        }
         
         res.render('stammdatenPflegen.ejs', {                              
-            meldung : "Die Stammdaten wurden geändert."
+            meldung : "Die Stammdaten wurden geändert. Neuer Nachname: " + kunde.Nachname + " Neue Mail: " + kunde.Mail
+            
         })
     }else{
         // Die login.ejs wird gerendert 
