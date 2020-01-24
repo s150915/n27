@@ -25,7 +25,6 @@ class Kunde {
 
 // Deklaration (let kunde) und Instanziierung (new Kunde()) 
 // Bei der Instanziierung werden Speicherzellen reserviert.
-//  
 
 let kunde = new Kunde()
 
@@ -76,10 +75,13 @@ const server = app.listen(process.env.PORT || 3000, () => {
 
 app.get('/',(req, res, next) => {   
 
-    let idKunde =req.cookies['istAngemeldetAls']
+    let idKunde = req.cookies['istAngemeldetAls']
     
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
+
+        // ... dann wird index.ejs gerendert.
+
         res.render('index.ejs', {                              
         })
     }else{
@@ -117,15 +119,17 @@ app.post('/',(req, res, next) => {
     
     // Der Wert des Inputs mit dem name = "idkunde" wird über
     // den Request zugewiesen an die Konstante idKunde
+
     const idKunde = req.body.idKunde
     const kennwort = req.body.kennwort
     
     console.log(idKunde + " == " + kunde.IdKunde + "&&" + kennwort + " == " + kunde.Kennwort)
-
+    
     // Wenn der Wert von idKunde dem Wert der Eigenschaft kunde.IdKunde
     // entspricht UND der Wert von kennwort der Eigenschaft kunde.Kennwort
     // entspricht, dann werden die Anweisungen im Rumpf der if-Kontrollstruktur
     // abgearbeitet.
+
     if(idKunde == kunde.IdKunde && kennwort == kunde.Kennwort){            
         console.log("Der Cookie wird gesetzt:")
         res.cookie('istAngemeldetAls', idKunde)
@@ -174,6 +178,7 @@ app.post('/kontoAnlegen',(req, res, next) => {
         // Der Wert aus dem Input mit dem Namen 'kontonummer'
         // wird zugewiesen (=) an die Eigenschaft Kontonummer
         // des Objekts namens konto.
+
         konto.Kontonummer = req.body.kontonummer
         konto.Kontoart = req.body.kontoart
         const bankleitzahl = 27000000
@@ -254,3 +259,86 @@ app.post('/stammdatenPflegen',(req, res, next) => {
     }
 })
 
+app.get('/ueberweisen',(req, res, next) => {   
+
+    let idKunde = req.cookies['istAngemeldetAls']
+    
+    if(idKunde){
+        console.log("Kunde ist angemeldet als " + idKunde)
+        
+        // ... dann wird kontoAnlegen.ejs gerendert.
+        
+        res.render('ueberweisen.ejs', {    
+            meldung : ""                          
+        })
+    }else{
+        res.render('login.ejs', {                    
+        })    
+    }
+})
+
+app.post('/ueberweisen',(req, res, next) => {   
+
+    let idKunde = req.cookies['istAngemeldetAls']
+    
+    if(idKunde){
+        console.log("Kunde ist angemeldet als " + idKunde)
+        
+        let konto = new Konto()
+
+        // Der Wert aus dem Input mit dem Namen 'kontonummer'
+        // wird zugewiesen (=) an die Eigenschaft Kontonummer
+        // des Objekts namens konto.
+
+        konto.Kontonummer = req.body.kontonummer
+        konto.Kontoart = req.body.kontoart
+        const bankleitzahl = 27000000
+        const laenderkennung = "DE"
+        konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + konto.Kontonummer)
+        
+        // Füge das Konto in die MySQL-Datenbank ein
+    
+        dbVerbindung.query('INSERT INTO konto(iban,anfangssaldo,kontoart,timestamp) VALUES ("' + konto.Iban + '",100,"' + konto.Kontoart + '",+ NOW());', function (fehler) {
+            if (fehler) throw fehler;
+            console.log('Das Konto wurde erfolgreich angelegt');
+        });
+
+        // ... wird die kontoAnlegen.ejs gerendert.
+
+        res.render('ueberweisen.ejs', {                              
+            meldung : "Das " + konto.Kontoart + " mit der IBAN " + konto.Iban + " wurde erfolgreich angelegt."
+        })
+    }else{
+        // Die login.ejs wird gerendert 
+        // und als Response
+        // an den Browser übergeben.
+        res.render('login.ejs', {                    
+        })    
+    }
+})
+
+app.get('/kontoAnzeigen',(req, res, next) => {   
+
+    let idKunde = req.cookies['istAngemeldetAls']
+    
+    if(idKunde){
+        console.log("Kunde ist angemeldet als " + idKunde)
+        
+// Hier muss die Datenbank abgefragt werden.
+
+        dbVerbindung.connect(function(fehler){
+            dbVerbindung.query('SELECT Anfangssaldo FROM konto WHERE iban = "DE1234";', function (fehler, result, fields) {
+                if (fehler) throw fehler
+                console.log('Der Saldo von DE1234 ist: ' + result);
+            })
+        })
+        
+     
+        res.render('kontoAnzeigen.ejs', {    
+            meldung : "Hier könnte Ihr Kontostand stehen."                          
+        })
+    }else{
+        res.render('login.ejs', {                    
+        })    
+    }
+})
