@@ -14,11 +14,11 @@
     <meta name="msapplication-TileColor" content="#ffc40d">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">        
-    <title>N27 - Konto anlegen</title>
+    <title>N27 - Überweisen</title>
   </head>
   <body>
     <header>
-      <h1>Konto anlegen</h1>    
+      <h1>Überweisen</h1>    
       <nav>      
         <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                        
         <a href="/login">Logout</a>        
@@ -28,15 +28,15 @@
       </nav>   
       <br>
     </header>
-    <form method="POST" action="/ueberweisen"> 
-        <label>Iban:</label>
-        <input type="text" name="iban">
-        <label>Verwendungszweck:</label>
-        <input type="text" name="verwendungszweck">      
+    <form method="POST" action="/ueberweisen">
+        <label>Iban des Empfängers:</label>
+        <input type="text" name="iban" pattern="[A-Z0-9]{22}" title="Bitte exakt 22 Zeichen eingeben!">
         <label>Betrag:</label>
-        <input type="number" name="betrag">    
-        <button>Überweisung ausführen</button> 
-      </form>
-      <label><%= meldung %></label>
+        <input type="number" name="betrag">
+        <label>Verwendungszweck:</label>
+        <input type="text" name="verwendungszweck">        
+        <button>Überweisung ausführen</button>
+    </form>
+    <label><%= meldung %></label>
   </body>
 </html>

@@ -33,12 +33,10 @@ if("GW11A".endsWith("A")||"GW11A".endsWith("B")||"GW11A".startsWith("GT")){
 
 // 18. if("GW11A".length === 5) Der Ausdruck ist wahr. Die Eigenschaft length gibt die Anzahl der Zeichen einer Zeichenkette zurück.
 
-// 17. if(undefined)    Der Ausdruck ist falsch. Ein Objekt ist undefined, wenn es nicht existiert.
+// 17. if(undefined)    Der Ausdruck ist falsch. Ein Objekt ist undefined, wenn sie nicht existiert.
 
 // 16. if(1 > 2 || 1 == 1) Der Ausdruck ist wahr, weil eine der beiden Prüfungen wahr ist.
-
 // 15. if(1 > 2 && 1 == 1) Der Ausdruck ist Falsch, weil die erste Prüfung Falsch ist.Alle mit && verketteten Prüfungen müssen Wahr sein, damit die Prüfung insgesamt Wahr wird.
-
 // 14. if(false)      Der Ausdruck ist falsch. 
 
 // 13. if (true)    Der Ausdruck ist wahr.
