@@ -1,5 +1,8 @@
+const mysql = require('mysql')
+const env = process.env.NODE_ENV || 'development';
+const config = require('./config')[env];
 // Klassendefinition der Klasse Konto. 
-// Die Klasse ist der Bauplan, der alle rele-
+// Die Klasse ist der Bauplan, der alle rele- 
 // vanten Eigenschaften enthält.
 
 class Konto{
@@ -35,27 +38,25 @@ let kunde = new Kunde()
 
 // Initialisierung
 
-kunde.IdKunde = 150915
+kunde.IdKunde = 150000
 kunde.Kennwort = "123"
 kunde.Geburtsdatum = "1999-12-31"
 kunde.Nachname = "Müller"
 kunde.Vorname = "Hildegard"
 kunde.Geschlecht = "w"
 kunde.Mail = "h.mueller@web.de"
-
 const iban = require('iban')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const mysql = require('mysql')
 const validator = require("email-validator");
 
+
 const dbVerbindung = mysql.createConnection({
-    host: '10.40.38.110',
-    user: 'placematman',
-    password: 'BKB123456!',
-    database: 'dbn27',
-    port: '3306'
+    host: config.database.host,
+    user: config.database.user,
+    password: config.database.password,
+    database: config.database.db
 })
 
 dbVerbindung.connect(function(fehler){
@@ -64,10 +65,10 @@ dbVerbindung.connect(function(fehler){
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
                 console.log("Tabelle kunde existiert bereits und wird nicht angelegt.")
             }else{
-                console.log("Fehler: " + fehler)
-            }    
+                console.log("Fehler: " + fehler )
+            }
         }else{
-        console.log("Die Tabelle kunde wurde erfolgreich angelegt.")
+            console.log("Tabelle Kunde erfolgreich angelegt.")
         }
     })
 })
@@ -78,10 +79,10 @@ dbVerbindung.connect(function(fehler){
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
                 console.log("Tabelle konto existiert bereits und wird nicht angelegt.")
             }else{
-                console.log("Fehler: " + fehler)
-            }    
+                console.log("Fehler: " + fehler )
+            }
         }else{
-        console.log("Die Tabelle konto wurde erfolgreich angelegt.")
+            console.log("Tabelle konto erfolgreich angelegt.")
         }
     })
 })
@@ -90,12 +91,11 @@ dbVerbindung.connect(function(fehler){
 
 dbVerbindung.query('INSERT INTO kunde(idKunde,vorname,nachname,mail,kennwort) VALUES (' + kunde.IdKunde + ',"' + kunde.Vorname + '","' + kunde.Nachname + '","' + kunde.Mail + '","' + kunde.Kennwort + '");', function (fehler) {
     if (fehler) {
-        if(fehler.code == 'ER_DUP_ENTRY'){
-            console.log("Kunde mit ID " + kunde.IdKunde + " existiert bereits und wird nicht erneut in DB angelegt." );                                                                                                                       // VALUES(150111,"Hans","Müller","hans@web.de","Geheim!");
+        if(fehler.code == "ER_DUP_ENTRY"){
+            console.log("Kunde mit ID " + kunde.IdKunde + " existiert bereits und wird nicht erneut in DB angelegt." );
+        }else{
+            console.log("Fehler: " + fehler.code)
         }
-        else{
-            console.log(fehler.code)    
-        }                                                                                                                 // VALUES(150111,"Hans","Müller","hans@web.de","Geheim!");
     }else{
         console.log('Kunde mit ID ' + kunde.IdKunde + " erfolgreich in DB angelegt.");
     }
@@ -226,9 +226,14 @@ app.post('/kontoAnlegen',(req, res, next) => {
     
         dbVerbindung.query('INSERT INTO konto(iban, idKunde, anfangssaldo, kontoart, timestamp) VALUES ("' + konto.Iban + '","' + idKunde + '",100,"' + konto.Kontoart + '",NOW());', function (fehler) {
             if (fehler) {
-                console.log("Fehler: Vermutlich existiert das Konto mit der IBAN" + kunde.Iban + " existiert bereits.")
-            }else
-            console.log('Das Konto wurde erfolgreich angelegt');
+                if(fehler.code == "ER_DUP_ENTRY"){
+                    console.log("Konto mit Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." );
+                }else{
+                    console.log("Fehler: " + fehler.code)
+                }
+            }else{
+                 console.log('Konto mit Iban ' + konto.Iban + " erfolgreich in DB angelegt.");
+            }            
         })
 
         // ... wird die kontoAnlegen.ejs gerendert.
@@ -273,7 +278,7 @@ app.post('/stammdatenPflegen',(req, res, next) => {
         // Nur, wenn das Input namens nachname nicht leer ist, wird der
         // Nachname neu gesetzt.
 
-        var erfolgsmeldung = "Stammdaten wurden aktualisiert.";
+        var erfolgsmeldung = "Stammdaten wurden aktualisiert. ";
 
         if(req.body.nachname){
             kunde.Nachname = req.body.nachname
@@ -288,15 +293,14 @@ app.post('/stammdatenPflegen',(req, res, next) => {
         if(req.body.mail){
             if(validator.validate(req.body.mail)){
                 kunde.Mail = req.body.mail
-                erfolgsmeldung += "; Neue Email: " + kunde.Mail
+                erfolgsmeldung += "; Neue E-Mail: " + kunde.Mail
             }else{
-                erfolgsmeldung += "; Die Email " + req.body.mail + " ist syntaktisch falsch und wird nicht aktualisiert."
-            }
+                erfolgsmeldung += "; Die E-Mail " + req.body.mail + " ist syntaktisch falsch und wird nicht aktualisiert."    
+            }            
         }
         
         res.render('stammdatenPflegen.ejs', {                              
             meldung : erfolgsmeldung
-            
         })
     }else{
         // Die login.ejs wird gerendert 
@@ -348,14 +352,14 @@ app.post('/ueberweisen',(req, res, next) => {
         dbVerbindung.query('INSERT INTO konto(iban,anfangssaldo,kontoart,timestamp) VALUES ("' + konto.Iban + '",100,"' + konto.Kontoart + '",NOW());', function (fehler) {
             if (fehler){
                 if(fehler.code == "ER_DUP_ENTRY"){
-                    console.log("Das Konto mit der IBAN" + konto.iban + "existiert bereits und wird nicht angelegt.")
+                    console.log("Das Konto mit der IBAN " + konto.Iban + " existiert bereits und wird nicht angelegt.")
                 }else{
-                    console.log("Fehler:" + fehler)
-                }
+                    console.log("Fehler: " + fehler)
+                }                
             }else{
                 console.log('Das Konto wurde erfolgreich angelegt');
-            }
-        });
+            }            
+        })
 
         // ... wird die kontoAnlegen.ejs gerendert.
 
